@@ -6,7 +6,87 @@ const CONFIG = {
 };
 
 // ==========================================================================
-// 1. LANGUAGE SETTINGS & INITIALIZATION
+// 1. TEXT SCRAMBLE / HACKER DECODER EFFECT
+// ==========================================================================
+class TextScramble {
+    constructor(el) {
+        this.el = el;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________';
+        this.update = this.update.bind(this);
+    }
+    setText(newText) {
+        const oldText = this.el.innerText;
+        const length = Math.max(oldText.length, newText.length);
+        const promise = new Promise((resolve) => this.resolve = resolve);
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+            const from = oldText[i] || '';
+            const to = newText[i] || '';
+            const start = Math.floor(Math.random() * 20);
+            const end = start + Math.floor(Math.random() * 20);
+            this.queue.push({ from, to, start, end });
+        }
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+        return promise;
+    }
+    update() {
+        let output = '';
+        let complete = 0;
+        for (let i = 0, n = this.queue.length; i < n; i++) {
+            let { from, to, start, end, char } = this.queue[i];
+            if (this.frame >= end) {
+                complete++;
+                output += to;
+            } else if (this.frame >= start) {
+                if (!char || Math.random() < 0.28) {
+                    char = this.randomChar();
+                    this.queue[i].char = char;
+                }
+                output += `<span style="color: #ffffff; font-family: monospace;">${char}</span>`;
+            } else {
+                output += from;
+            }
+        }
+        this.el.innerHTML = output;
+        if (complete === this.queue.length) {
+            this.resolve();
+        } else {
+            this.frameRequest = requestAnimationFrame(this.update);
+            this.frame++;
+        }
+    }
+    randomChar() {
+        return this.chars[Math.floor(Math.random() * this.chars.length)];
+    }
+}
+
+let activeScramble = null;
+
+function triggerScramble(lang) {
+    const targetSpan = document.querySelector(`.hero-content h1 .lang-${lang}`);
+    if (targetSpan) {
+        const finalPhrases = {
+            en: "Hi, I'm Gabriel Bayer",
+            es: "Hola, soy Gabriel Bayer"
+        };
+        
+        // Restore the inactive language span content to plain text to avoid weird mixed states
+        const otherLang = lang === 'en' ? 'es' : 'en';
+        const otherSpan = document.querySelector(`.hero-content h1 .lang-${otherLang}`);
+        if (otherSpan) {
+            otherSpan.textContent = otherLang === 'en' ? finalPhrases.en : finalPhrases.es;
+        }
+        
+        // Scramble active span
+        const fx = new TextScramble(targetSpan);
+        fx.setText(lang === 'en' ? finalPhrases.en : finalPhrases.es);
+    }
+}
+
+// ==========================================================================
+// 2. LANGUAGE SETTINGS & INITIALIZATION
 // ==========================================================================
 function setLanguage(lang) {
     document.body.className = `lang-${lang}`;
@@ -23,6 +103,9 @@ function setLanguage(lang) {
         btnEs.classList.add('active-lang');
         btnEn.classList.remove('active-lang');
     }
+    
+    // Trigger hacker scramble effect
+    triggerScramble(lang);
 }
 
 // Initialize Language
