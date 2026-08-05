@@ -159,18 +159,66 @@ function showToast(message) {
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        const formAction = contactForm.getAttribute('action');
         const name = document.getElementById('form-name').value;
-        
-        contactModal.close();
-        contactForm.reset();
-        
         const isEs = document.body.classList.contains('lang-es');
-        const successMsg = isEs
-            ? `¡Gracias, ${name}! Tu mensaje ha sido enviado correctamente.`
-            : `Thank you, ${name}! Your message has been sent successfully.`;
-            
-        showToast(successMsg);
+        
+        // If it's a simulated action (placeholder '#' or empty)
+        if (!formAction || formAction === '#') {
+            simulateSubmit(name, isEs);
+            return;
+        }
+        
+        // Real AJAX submission using fetch (suitable for Formspree, FormSubmit, Web3Forms, etc.)
+        const submitButton = contactForm.querySelector('.form-submit-btn');
+        const originalBtnText = submitButton.innerHTML;
+        
+        submitButton.disabled = true;
+        submitButton.innerHTML = isEs ? 'Enviando...' : 'Sending...';
+        
+        const formData = new FormData(contactForm);
+        
+        fetch(formAction, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                contactModal.close();
+                contactForm.reset();
+                const successMsg = isEs
+                    ? `¡Gracias, ${name}! Tu mensaje ha sido enviado correctamente.`
+                    : `Thank you, ${name}! Your message has been sent successfully.`;
+                showToast(successMsg);
+            } else {
+                throw new Error('Form submission failed');
+            }
+        })
+        .catch(error => {
+            const errorMsg = isEs
+                ? 'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.'
+                : 'There was an error sending your message. Please try again.';
+            showToast(errorMsg);
+            console.error('Error submitting form:', error);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalBtnText;
+        });
     });
+}
+
+function simulateSubmit(name, isEs) {
+    contactModal.close();
+    contactForm.reset();
+    const successMsg = isEs
+        ? `¡Gracias, ${name}! Tu mensaje ha sido enviado correctamente.`
+        : `Thank you, ${name}! Your message has been sent successfully.`;
+    showToast(successMsg);
 }
 
 // ==========================================================================
