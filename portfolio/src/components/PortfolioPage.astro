@@ -1,0 +1,31 @@
+---
+import type { Locale } from '../types/portfolio';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import ProjectCard from './ProjectCard.astro';
+import Profile from './Profile.astro';
+import Capabilities from './Capabilities.astro';
+import Contact from './Contact.astro';
+import Arrow from './Arrow.astro';
+import { projects } from '../data/projects';
+import { getDictionary } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+---
+<BaseLayout locale={locale}>
+  <Header locale={locale} />
+  <main id="main" tabindex="-1">
+    <Hero locale={locale} />
+    <section class="work-section section container" id="work" aria-labelledby="work-title">
+      <div class="section-heading"><div><p class="section-label mono">{t.work.eyebrow}</p><h2 id="work-title" class="section-title">{t.work.title}</h2></div><p class="section-intro">{t.work.intro}</p></div>
+      <div class="project-index mono"><span>{t.work.index}</span><span aria-hidden="true">↓</span></div>
+      <div class="project-list">{projects.map((project) => <ProjectCard project={project} locale={locale} />)}</div>
+    </section>
+    <Profile locale={locale} />
+    <Capabilities locale={locale} />
+    <Contact locale={locale} />
+  </main>
+  <footer class="site-footer container"><div class="footer-main"><a class="footer-brand" href="#top">GABRIEL BAYER<span aria-hidden="true">.</span></a><p>{t.footer.note}</p><a class="back-to-top mono" href="#top">{t.footer.top}<Arrow direction="up-right" /></a></div><div class="footer-colophon mono"><span>© {new Date().getFullYear()} Gabriel Bayer</span><span>{t.footer.colophon}</span></div></footer>
+</BaseLayout>

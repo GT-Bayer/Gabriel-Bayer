@@ -1,0 +1,16 @@
+:root {
+  --ink: #13170f;
+  --surface: #1d2218;
+  --surface-raised: #262c1e;
+  --paper: #eeeede;
+  --muted: #b2b6a6;
+  --line: #3c4431;
+  --lime: #c7f542;
+  --black: #090c06;
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --font-body: 'Space Grotesk', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --page-width: 1280px;
+  --page-gutter: clamp(20px, 5vw, 80px);
+  --hard-shadow: 7px 7px 0 var(--black);
+}

@@ -1,0 +1,75 @@
+---
+import Arrow from './Arrow.astro';
+import type { Locale } from '../types/portfolio';
+import { getDictionary, localePath } from '../i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const links = [
+  { id: 'work', label: t.nav.work },
+  { id: 'about', label: t.nav.about },
+  { id: 'toolkit', label: t.nav.capabilities },
+];
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="wordmark" href={localePath(locale)} aria-label={t.nav.home}>
+      <span class="wordmark-symbol" aria-hidden="true">gb.</span>
+      <span class="wordmark-name">GABRIEL<br />BAYER</span>
+    </a>
+    <nav class="desktop-nav" aria-label={t.nav.menu}>
+      {links.map((link) => <a href={`#${link.id}`} data-nav-link><span class="nav-dot" aria-hidden="true"></span>{link.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <nav class="language-nav" aria-label={t.nav.language}>
+        <a href={localePath('en')} lang="en" hreflang="en" aria-label="English" aria-current={locale === 'en' ? 'page' : undefined} data-language-link>EN</a>
+        <span aria-hidden="true">/</span>
+        <a href={localePath('es')} lang="es" hreflang="es" aria-label="Español" aria-current={locale === 'es' ? 'page' : undefined} data-language-link>ES</a>
+      </nav>
+      <a class="header-contact" href="#contact">{t.nav.contact}<Arrow /></a>
+    </div>
+    <details class="mobile-navigation">
+      <summary>{t.nav.menu}<span aria-hidden="true">+</span></summary>
+      <nav aria-label={t.nav.menu}>
+        {links.map((link) => <a href={`#${link.id}`}>{link.label}<Arrow direction="right" /></a>)}
+        <a href="#contact">{t.nav.contact}<Arrow direction="right" /></a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.mobile-navigation');
+  menu?.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
+    link.addEventListener('click', () => { menu.open = false; });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu?.open) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
+  });
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const target = new URL(link.href);
+      target.hash = window.location.hash;
+      link.href = target.href;
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        navLinks.forEach((link) => {
+          if (link.hash === `#${entry.target.id}`) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      }
+    }, { rootMargin: '-10% 0px -60% 0px' });
+    document.querySelectorAll<HTMLElement>('main > section[id]').forEach((section) => observer.observe(section));
+  }
+</script>

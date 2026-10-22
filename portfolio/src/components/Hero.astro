@@ -1,0 +1,49 @@
+---
+import Arrow from './Arrow.astro';
+import type { Locale } from '../types/portfolio';
+import { getDictionary } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const { hero: t } = getDictionary(locale);
+---
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero-topline mono"><span><i class="square" aria-hidden="true"></i>{t.eyebrow}</span><span>{t.edition} / {new Date().getFullYear()}</span></div>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <h1 id="hero-title">GABRIEL<br /><span>BAYER<span class="name-period">.</span></span></h1>
+      <p class="hero-statement">{t.intro}</p>
+      <p class="hero-description">{t.description}</p>
+      <a class="button button-lime" href="#work">{t.cta}<Arrow direction="down" /></a>
+    </div>
+    <figure class="hero-figure">
+      <div class="figure-top mono"><span>FIG. 001</span><span aria-hidden="true">[ GB / DEV ]</span></div>
+      <div class="layer-art" aria-hidden="true">
+        <svg viewBox="0 0 400 375" fill="none">
+          <path class="art-axis" d="M200 15v340M25 187h350M57 50l286 274M57 324 343 50" />
+          <path class="art-base" d="m55 250 145-72 145 72-145 73z" />
+          <path class="art-side" d="M55 250v16l145 73 145-73v-16l-145 73z" />
+          <path class="art-dotted" d="M55 250V122m290 128V122M200 323V196" />
+          <path class="art-mid" d="m55 186 145-72 145 72-145 73z" />
+          <path class="art-side" d="M55 186v16l145 73 145-73v-16l-145 73z" />
+          <path class="art-top" d="m55 122 145-72 145 72-145 73z" />
+          <path class="art-top-edge" d="M55 122v16l145 73 145-73v-16l-145 73z" />
+          <path class="art-cross" d="m168 122 32-16 32 16m-32-16v33" />
+          <path class="art-guide" d="M345 122h33m-33 64h33m-33 64h33" />
+          <text x="361" y="113">01</text><text x="361" y="177">02</text><text x="361" y="241">03</text>
+        </svg>
+      </div>
+      <div class="layer-legend mono">{t.layers.map((layer, i) => <span><b>0{i + 1}</b>{layer}</span>)}</div>
+      <figcaption><span class="mono">{t.figureNote}</span><strong>{t.figure}</strong></figcaption>
+    </figure>
+  </div>
+  <div class="hero-bottom">
+    <p class="availability mono"><span aria-hidden="true"></span>{t.availability}</p>
+    <a href="#work" class="scroll-cue mono">{t.scroll}<Arrow direction="down" /></a>
+  </div>
+  <dl class="focus-strip">
+    <div><dt>{t.focus}</dt><dd>{t.focusValue}</dd></div>
+    <div><dt>{t.perspective}</dt><dd>{t.perspectiveValue}</dd></div>
+    <div><dt>{t.exploring}</dt><dd>{t.exploringValue}</dd></div>
+    <div class="strip-mark" aria-hidden="true">↳</div>
+  </dl>
+</section>

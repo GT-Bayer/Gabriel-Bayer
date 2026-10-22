@@ -1,0 +1,12 @@
+---
+import type { Locale } from '../types/portfolio';
+import { getDictionary } from '../i18n';
+import { capabilities } from '../data/capabilities';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const { toolkit: t } = getDictionary(locale);
+---
+<section class="toolkit-section section container" id="toolkit" aria-labelledby="toolkit-title">
+  <div class="section-heading"><div><p class="section-label mono">{t.eyebrow}</p><h2 id="toolkit-title" class="section-title">{t.title}</h2></div><p class="section-intro">{t.intro}</p></div>
+  <div class="capability-list">{capabilities.map((item) => <article class="capability-row"><span class="capability-number mono">{item.number}</span><div><h3>{item.title[locale]}</h3><p>{item.description[locale]}</p></div><ul>{item.tools.map((tool) => <li>{tool}</li>)}</ul></article>)}</div>
+</section>

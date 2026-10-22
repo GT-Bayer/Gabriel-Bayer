@@ -1,0 +1,33 @@
+---
+import type { Locale, Project } from '../types/portfolio';
+import { getDictionary } from '../i18n';
+import ProjectViews from './interactive/ProjectViews';
+import '../styles/projects.css';
+
+interface Props { project: Project; locale: Locale }
+const { project, locale } = Astro.props;
+const { work: labels } = getDictionary(locale);
+const previewSrc = `${import.meta.env.BASE_URL}${project.preview.src}`;
+---
+<article
+  class:list={['project-sheet', { 'is-featured': project.featured }]}
+  id={project.id}
+  aria-labelledby={`${project.id}-title`}
+>
+  <header class="sheet-header">
+    <span class="sheet-number" aria-hidden="true">{project.number}</span>
+    <div class="sheet-heading">
+      <span class="mono">{project.category[locale]}</span>
+      <h3 id={`${project.id}-title`}>{project.name}</h3>
+    </div>
+    <span class="sheet-catalog mono">{labels.projectLabel} / {project.id.toUpperCase()}</span>
+    {project.featured && <span class="sheet-featured mono">{labels.featured}</span>}
+  </header>
+  <ProjectViews project={project} locale={locale} labels={labels} previewSrc={previewSrc} client:visible />
+  <noscript>
+    <details class="sheet-nojs">
+      <summary>{labels.systemView}</summary>
+      <ol>{project.diagram.steps.map((step) => <li>{step.label[locale]}</li>)}</ol>
+    </details>
+  </noscript>
+</article>

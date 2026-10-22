@@ -1,0 +1,20 @@
+---
+import type { Locale } from '../types/portfolio';
+import { getDictionary } from '../i18n';
+import { site } from '../data/site';
+import ContactActions from './interactive/ContactActions';
+import Arrow from './Arrow.astro';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const { contact: t } = getDictionary(locale);
+---
+<section class="contact-section" id="contact" aria-labelledby="contact-title">
+  <div class="container contact-inner">
+    <div class="contact-topline"><p class="section-label mono">{t.eyebrow}</p><span class="contact-asterisk" aria-hidden="true">✳</span></div>
+    <h2 id="contact-title">{t.title}</h2>
+    <div class="contact-grid">
+      <div><p class="contact-description">{t.description}</p><div class="contact-socials"><a href={site.github} target="_blank" rel="noopener noreferrer">GitHub<Arrow /></a><a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn<Arrow /></a></div></div>
+      <div class="email-block"><span class="mono">{t.emailLabel}</span><a class="contact-email" href={`mailto:${site.email}`}>{site.email}</a><ContactActions email={site.email} labels={t} client:visible /></div>
+    </div>
+  </div>
+</section>
