@@ -8,7 +8,7 @@ import '@fontsource/space-grotesk/latin-600.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 import type { Locale } from '../types/portfolio';
-import { getDictionary } from '../i18n';
+import { getDictionary, localePath } from '../i18n';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -29,6 +29,35 @@ const base = import.meta.env.BASE_URL;
     <meta name="color-scheme" content="dark" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <title>{t.meta.title}</title>
+    <script is:inline define:vars={{ englishPath: localePath('en'), spanishPath: localePath('es') }}>
+      (() => {
+        // Explicit localized URLs always win. Automatic routing only starts at English home.
+        if (window.location.pathname !== englishPath) return;
+
+        let language;
+        try {
+          language = window.localStorage.getItem('preferred-language');
+        } catch {
+          // Navigation remains available when storage is blocked.
+        }
+
+        if (language !== 'en' && language !== 'es') {
+          const languages = [...(navigator.languages || []), navigator.language || ''];
+          language = languages.some((value) => value.toLowerCase().startsWith('es')) ? 'es' : 'en';
+          try {
+            window.localStorage.setItem('preferred-language', language);
+          } catch {
+            // The detected language still works for this visit.
+          }
+        }
+
+        if (language === 'es') {
+          const target = new URL(window.location.href);
+          target.pathname = spanishPath;
+          window.location.replace(target.href);
+        }
+      })();
+    </script>
   </head>
   <body id="top">
     <a class="skip-link" href="#main">{t.skip}</a>

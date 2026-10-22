@@ -53,6 +53,14 @@ const links = [
 
   document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((link) => {
     link.addEventListener('click', () => {
+      const language = link.lang;
+      if (language === 'en' || language === 'es') {
+        try {
+          window.localStorage.setItem('preferred-language', language);
+        } catch {
+          // Keep the native language link usable when storage is blocked.
+        }
+      }
       const target = new URL(link.href);
       target.hash = window.location.hash;
       link.href = target.href;
